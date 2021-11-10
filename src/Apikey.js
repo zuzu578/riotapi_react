@@ -2,6 +2,6 @@
  * riot api key 를 적어두는 property file 입니다. 
  */
 
-const api_key = 'RGAPI-35ddec40-f742-434b-8624-60b9b6667c0b';
+const api_key = 'RGAPI-51b7a737-6f56-4f1a-9132-84908b02c169';
 
 export default api_key;

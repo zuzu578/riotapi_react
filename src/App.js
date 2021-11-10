@@ -17,6 +17,7 @@ function App() {
   // 검색한 소환사의 정보를 가져옵니다.
   let[getUserInfo , setUserInfo] = useState(null);
 
+  
   // 검색한 소환사의 랭크정보를 가져옵니다.
   let[getUserRank , setUserRank] = useState(null);
 
@@ -24,10 +25,17 @@ function App() {
   let[getMatchIdList , setMatchIdList] = useState(null);
  
   let[revDate , setRevDate] = useState(null);
+
+  // 검색한 소환사의 전적에서 참가한 소환사들의 정보 ( kda , 챔피언 , 아이템정보 등을 저장합니다 .)
+  let[getSummonInfo , SetSummonInfo] = useState(null);
   
   // 모달창의 상태 여부 state
   let [modalStatus,setModalStatus] = useState(false);
+  
+  
 
+  const PromiseArr = [];
+  
  /**
   *  소환사의 이름을 input 에서 받아옵니다. 
   * @param {*} e 
@@ -35,8 +43,6 @@ function App() {
   const GetSummonerName = (e) =>{
   
     setSummonerName(e.target.value);
-  
-    
   }
 
 /**
@@ -47,7 +53,8 @@ function App() {
  * 사용자가 검색버튼을 누르면 해당 검색창의 parameter를 이용하여 데이터를 fetch 합니다. 그후 모달창을 띄웁니다.
  */
    async function ChangeStatus(e){
-    
+    console.log("처음 1");
+  
     if(!summonerName){
       alert('소환사 이름을 입력해주세요!');
       return false;
@@ -62,13 +69,15 @@ function App() {
                api_key: api_key,
               }
             })
-            console.log('resdata ! => 1 ',response.data);
+           // console.log('resdata ! => 1 ',response.data);
             setUserInfo(response.data);
   
             var convertingDate = new Date(response.data.revisionDate);
             var date = convertingDate;
-            console.log(date);
+            //console.log(date);
             setRevDate(date);
+
+            console.log("setUserInfo() set State 2 ");
         /**
          * @param encrytedSummonerId 
          * @description
@@ -85,6 +94,7 @@ function App() {
               
                 setUserRank(response2.data[i]);
               }
+              console.log("setUserRank() set State 3 ");
 
             /**
              * @param puuId
@@ -93,47 +103,81 @@ function App() {
              * 
              */
             // console.log("user PuuId => " ,response.data.puuid );
-             const response3 = await axios.get('https://asia.api.riotgames.com/lol/match/v5/matches/by-puuid/'+response.data.puuid+'/ids?start=0&count=20',{
+             const response3 = await axios.get('https://asia.api.riotgames.com/lol/match/v5/matches/by-puuid/'+response.data.puuid+'/ids?start=0&count=5',{
               params:{
                 api_key: api_key,
               }
             })
+          
             setMatchIdList(response3.data);
-           // console.log("user match Id List => " , getMatchIdList);
-           //console.log("user match Id List => " , response3.data);
+            console.log("setMatchIdList() set State  4");
            
-           for(var k = 0 ; k < response3.data.length;k++){
-            const userMatchList = await axios.get('https://asia.api.riotgames.com/lol/match/v5/matches/'+response3.data[k]+'',{
+           
+           /**
+            * @param matchIdList 
+            * @desc puuId 를 이용하여 매치 id 정보들을 가져온 list 를 반복문을 이용하여 매치 상세 정보를 가져옵니다. 
+            */
+
+            const response4 = await axios.get('https://asia.api.riotgames.com/lol/match/v5/matches/'+response3.data[i]+'',{
               params:{
                 api_key: api_key,
               }
             })
-            console.log('userMatchList => ' , userMatchList.data.info);
-             //console.log(response3.data[k]);
-           }
-           
-              
+            // for loop 안에서 비동기 (axios통신등 )을 할때는 promise.all 을 사용합니다.
+            let users = [];
+        
+            let promises = [];
+            for (i = 0; i < response3.data.length; i++) {
+              promises.push(
+                axios.get('https://asia.api.riotgames.com/lol/match/v5/matches/'+response3.data[i]+'',{
+                params:{
+                  api_key: api_key,
+                }
+              })
+                .then(response => {
+                  // do something with response
+                  users.push(response);
+                  
+               
+               
+                })
+              )
+         
+            }
+            
+            
+           // SetSummonInfo(users)
 
-            // 데이터를 가져오고 모달창을 켭니다. 
+            console.log("promise all 6");       
+          // 데이터를 가져오고 모달창을 켭니다. 
+          console.log("모달 상태 true 7");
           if(modalStatus === false){
+            console.log("모달상태 true 로 변경 ")
             setModalStatus(true);
+           
           }
+          console.log("전적 데이터 리스트 for loop axios 5");
+          Promise.all(promises).then(()=>{ SetSummonInfo(users)})
+
           
-          
-      
   }
+
   /**
-   * 가져온 소환사의 정보를 rendering 해줍니다.
+   * 가져온 소환사의 정보를 rendering 해줍니다. ( Modal status === true 일 경우에 동작 )
    * @returns 
    */
   const GetRendering  = ()=> { 
-  //console.log('2nd data => ' , getUserRank);
+   
+   console.log(getSummonInfo);
+   console.log("데이터 렌더링 8 ");
   
- 
- 
-   //console.log('revdate ! => ' , revDate);
+  // getMatchIdList2();
   
-  
+   
+    
+        
+
+    
     return(
       <div className="renderingSummonerInfo">
         <h1>
@@ -149,6 +193,7 @@ function App() {
         <div>최근전적검색 : {getUserInfo.revisionDate} </div>
 
 
+        <div>  </div>
 
   
        
@@ -160,7 +205,7 @@ function App() {
    
 
         <div>
-          
+         
        
 
 
@@ -176,7 +221,7 @@ function App() {
   }
     
 
-
+ 
   return (
     <div className="App">
       <div className="container">
@@ -209,3 +254,4 @@ function App() {
 }
 
 export default App;
+
