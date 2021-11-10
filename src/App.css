@@ -1,5 +1,6 @@
+
 .App {
-  text-align: center;
+ 
 }
 
 .App-logo {
@@ -35,4 +36,27 @@
   to {
     transform: rotate(360deg);
   }
+}
+.banner_image img{
+  width:20%;
+
+  
+}
+.banner_image{
+  text-align: center;
+}
+.image_box img{
+  width: 10%;
+
+}
+.renderingSummonerInfo{
+  width:1100px;
+  margin:0 auto;
+
+}
+.rankArea img{
+  width: 20%;
+}
+.tier{
+  font-weight: bold;
 }
