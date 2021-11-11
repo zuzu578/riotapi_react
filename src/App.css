@@ -60,3 +60,18 @@
 .tier{
   font-weight: bold;
 }
+.fetchingButton{
+  border:1px solid grey;
+  padding:10px;
+  text-align: center;
+  cursor: pointer;
+
+}
+.gameDetail{
+  margin-top:30px;
+  display: flex;
+ 
+  
+
+
+}
