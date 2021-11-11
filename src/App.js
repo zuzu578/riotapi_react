@@ -5,12 +5,17 @@ import axios from 'axios';
 import api_key from './Apikey'; // api key 
 import GetData from './ResultPage.js';
 import {Link , Route } from 'react-router-dom';
+import jquery from 'jquery';
+import $ from 'jquery';
+
 
 
 
 function App() {
   
  
+
+
   // 검색한 소환사의 이름을 저장하는 state 
   let [summonerName , setSummonerName] = useState(null);
  
@@ -173,65 +178,72 @@ function App() {
      */
 
       const RenderingGameList = () =>{
+        var myGameChamHistoryList = [];
+        var summonerName2 = summonerName;
+
         console.log('getSummonInfo => ' , getSummonInfo );
       
+        for(var i = 0 ; i < getSummonInfo.length;i++){
+          for(var j = 0 ; j < getSummonInfo[i].data.info.participants.length; j++){
+          //  console.log('getSummonInfo => ' , getSummonInfo[i].data.info.participants[j]);
+            if(getSummonInfo[i].data.info.participants[j].summonerName == getUserInfo.name){
 
-        getSummonInfo.map(function(items,index){
-          console.log("index start => " + index);
-
-          getSummonInfo[index].data.info.participants.map(function(items, index2){
-            //var party =  getSummonInfo[index].data.info.particip∂ants;
-              //console.log("index : " + index);
-            
-              console.log("championame => " + getSummonInfo[index].data.info.participants[index2].championName);
-          });
-
-        });
-        
-        return(
-          <div className="gameDetail"> 
-        <div className="container_001">
-        {
-          getSummonInfo.map(function(items){
-            return<div className="game_mode_Container"> 
-          <div className="matchDetail">
-            <div className="game_mode">
-              {items.data.info.gameMode}
-            </div>
-            </div>
-          </div>
-          })     
-        }
-      </div>
-          <div className="container_002">
-          {
-
-          getSummonInfo.map(function(items,index){
-            getSummonInfo[index].data.info.participants.map(function(items, index2){
-            console.log("championame => " + getSummonInfo[index].data.info.participants[index2].championName);
-
-            return<div className="championImageContainer">
-              
-            <div className="championImage">
-              <h1>hello</h1>
-            {getSummonInfo[index].data.info.participants[index2].championName}
-            </div>
-
-            </div>
-
-              });
-
-          })
-
-           
+             
+            console.log('getSummonInfo => ' , getSummonInfo[i].data.info.participants[j].championName,getSummonInfo[i].data.info.participants[j].summonerName);
+            myGameChamHistoryList.push(getSummonInfo[i].data.info.participants[j].championName);
             }
-              </div>
+            
+         
+          }
+        
+        }
 
-              
+       
+
+
+        return(
+      <div className="gameDetail"> 
+          <Table striped bordered hover>
+            <thead>
+              <tr>
+                <th>챔피언</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Username</th>
+              </tr>
+            </thead>
+            <tbody id="dataRenderingBody">
+        {myGameChamHistoryList.map(( listValue, index ) => {
+          return (
+            <tr key={index}>
+              <td>
+                {<img src={'https://opgg-static.akamaized.net/images/lol/champion/'+listValue+'.png?image=c_scale,q_auto,w_46&v=1635906101'} alt=""/>}
+                <small>{listValue}</small>
+                </td>
+
+               
+                
+                <td>
+
+                  시발
+                </td>
+             
+            </tr>
+          );
+        })}
+        </tbody>
+        </Table>
+
+        
 
 
 
-            </div>
+
+
+      </div>
+        
+
+
         
 
         )
