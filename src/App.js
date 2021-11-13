@@ -12,6 +12,19 @@ import $ from 'jquery';
 
 
 function App() {
+  /**
+   * init Function();
+   */
+  // App component => did Mounted 상태가 되면 api 가져오는 count 갯수를 초기에 설정해줍니다. 
+
+  //count => 초기 값 : 10
+
+  let[count , setCount] = useState(null);
+
+  useEffect(() => {
+    setCount(10);
+
+  }, []);
   
  
 
@@ -39,6 +52,8 @@ function App() {
   let [modalStatus,setModalStatus] = useState(false);
   // 게임리스트 가져오기 버튼 상태여부 state 
   let[fetchGameListButton, setFetchGameListButton] = useState(false);
+
+  
  
  /**
   *  소환사의 이름을 input 에서 받아옵니다. 
@@ -49,6 +64,7 @@ function App() {
     setSummonerName(e.target.value);
   }
 
+
 /**
  * 
  * @param {*} e 
@@ -56,10 +72,14 @@ function App() {
  * @description
  * 사용자가 검색버튼을 누르면 해당 검색창의 parameter를 이용하여 데이터를 fetch 합니다. 그후 모달창을 띄웁니다.
  */
+// 이벤트 scroll 시에도 data 를 fetch 할수 있게 합니다.
    async function ChangeStatus(e){
-   
+
+    setCount(count+5);
+    console.log('count -> ' , count);
     //console.log("처음 1");
-  
+    
+    
     if(!summonerName){
       alert('소환사 이름을 입력해주세요!');
       return false;
@@ -108,7 +128,7 @@ function App() {
              * 
              */
             // console.log("user PuuId => " ,response.data.puuid );
-             const response3 = await axios.get('https://asia.api.riotgames.com/lol/match/v5/matches/by-puuid/'+response.data.puuid+'/ids?start=0&count=15',{
+             const response3 = await axios.get('https://asia.api.riotgames.com/lol/match/v5/matches/by-puuid/'+response.data.puuid+'/ids?start=0&count='+count+'',{
               params:{
                 api_key: api_key,
               }
@@ -150,17 +170,12 @@ function App() {
          
             }
             
-          
-
-          //  console.log("promise all 6");       
-          // 데이터를 가져오고 모달창을 켭니다. 
-         // console.log("모달 상태 true 7");
-         
-          
-          //console.log("전적 데이터 리스트 for loop axios 5");
+     
           Promise.all(promises).then(()=>{ SetSummonInfo(users)})
           setModalStatus(true);
   }
+
+  console.log('getSummonInfo init() => ', getSummonInfo);
     /**
      * @desc 
      * 게임데이터 가져오기 버튼을 클릭하면 렌더링해주는 부분을 true 값으로 설정해줍니다. 
@@ -210,14 +225,23 @@ function App() {
       
       var wardPlacedList = [];
 
-       //console.log('getSummonInfo => ' , getSummonInfo );
+      var championName = []; 
+      var summonerName = [];
+
+
+
+      
       
         for(var i = 0 ; i < getSummonInfo.length;i++){
           for(var j = 0 ; j < getSummonInfo[i].data.info.participants.length; j++){
-            
+            console.log(getSummonInfo[i].data.info.participants[j].summonerName)
+
+            summonerName.push(getSummonInfo[i].data.info.participants[j].summonerName)
+           championName.push(getSummonInfo[i].data.info.participants[j].championName)
+
             // 검색한 소환사의 플레이정보를 가져옵니다 
             if(getSummonInfo[i].data.info.participants[j].summonerName == getUserInfo.name){
-              console.log(getSummonInfo[i].data.info)
+              //console.log(getSummonInfo[i].data.info)
 
 
               // 제어와드  설치 갯수  participants[j].detectorWardsPlaced
@@ -285,10 +309,15 @@ function App() {
 
         
         }
+
+
    
         /**
          *  for loop 로 저장한 객체들을 Object 화 합니다.
          */
+        
+
+
         var winStatusArr = []; //승패 여부 상태 값 
         
         var list = []; //룬을 담는 배열 
@@ -310,6 +339,14 @@ function App() {
         var gameDuration = []; // gameDurationList
 
         var wardPlaced = []; // wardPlacedList
+
+
+        var participantsList  = []; // 아군 정보 
+
+        var participantsList2 = []; // 적군 정보 
+   
+        
+
 
 
         for(var i=0; i < getSummonInfo.length; i++){
@@ -426,9 +463,42 @@ function App() {
     }
     champLevels.push(cahmpLevelItems);
 }
+
+
+
+//var tempParty = [] ; 
+
+// 아군 참가자 
+console.log('summonerName=>',summonerName);
+
+
+
+for(var i=0; i < 5; i++){
+  var participants1 = {
+ 
+    summonerName : summonerName[i],
+    championName : championName[i]
+        
+  }
+  participantsList.push(participants1);
+}
+
+// 적군 참가자 
+
+for(var i = 5; i < 10 ; i++){
+  var participants2 = {
+    summonerName : summonerName[i],
+    championName : championName[i]
+  }
+
+  participantsList2.push(participants2);
+}
+
         
         
-//console.log('gameDuration=>' , gameDuration);
+console.log('participantsList=>' , participantsList);
+console.log('participantsList2=>' , participantsList2);
+//console.log('tempParty = > ' , tempParty);
         return(
       <div className="gameDetail"> 
      
@@ -439,7 +509,6 @@ function App() {
           {myGameChamHistoryList.map(function (listValue,index) {
             return (
               <tr key={index}>
-             
                 <td>   {gameMod[index].gameModes}<br/>
                     <small>{winStatusArr[index].win}</small><br/></td>
                   <td>
@@ -447,11 +516,6 @@ function App() {
                     {<img src={'https://opgg-static.akamaized.net/images/lol/champion/'+listValue+'.png?image=c_scale,q_auto,w_46&v=1635906101'} alt=""/>}<br/>
                        
                   <small>{listValue}</small>
-
-
-
-
-
 
                   </td>
                   <td>
@@ -488,6 +552,7 @@ function App() {
 
                     </div>     
                     </td>
+                    <td> {/*participantsList[index].summonerName*/}</td>
 
                  
                     
@@ -509,7 +574,7 @@ function App() {
           
 
         
-
+       
 
 
 
