@@ -309,7 +309,124 @@ function App() {
 
         
         }
+      
+        var rowData = [];
+        var index = []; // 초기 data count 
+        for(var i = 1; i < count + 1; i++){
+         console.log('i X 10 ===>' ,i*10);
+          //console.log(index.push(i*10));
+          index.push(i*10)
+        }
+        console.log('index =>!!!!!! ' , index);
+      
+        var cnt = 0;
+        /**
+         * 
+         * @param {*} pushData 
+         * @returns 
+         *  게임 참가자들을 obj 로 만듭니다.
+         */
+        function Temp(pushData){
+          console.log("pushData2 => " , pushData);
+          var obj = null;
+          var subIndex = [5,10]
+          var k = 0;
 
+          var team = [];
+          var enemy = []; 
+
+          for(var i = 0 ; i < pushData.length; i++){
+
+            
+            if(i < subIndex[0]){
+              team.push(pushData[i]); 
+            }else if(i > 4 && i < subIndex[1]){
+              enemy.push(pushData[i]); 
+            }
+
+           //console.log('pushData =>' , pushData[i]);
+          }
+
+          //console.log('team, enemy => ' ,team,enemy)
+
+
+
+       
+          var participantsListObj  = {
+            teams : team,
+            enemys : enemy,
+          
+          
+      }
+
+          return participantsListObj
+
+
+        }
+        var indexcnt = 0;
+        var subData = [];
+        var j = 0;
+        var pushData = [];
+        for(var i=0; i < summonerName.length; i++){
+
+          //console.log("i => " , i);
+          if(j > 9){ break; }
+
+          if(i < index[j]){
+            //console.log("summonerName -> ",summonerName);
+            pushData.push(summonerName[i]);
+          }
+        
+          //console.log("length = " + pushData);
+          if(pushData.length == 10){
+            console.log("j = " + j);
+            console.log("push Data =>" , pushData);
+            var obj = null;
+            var subIndex = [5,10]
+            var k = 0;
+            // 참가자 
+            var team = [];
+            var enemy = []; 
+            obj = Temp(pushData);
+
+            rowData.push(obj);
+
+            
+            /*for(var i = 0 ; i < pushData.length; i++){
+
+              /*
+              if(i < subIndex[0]){
+                team.push(pushData[i]); 
+              }else if(i > 4 && i < subIndex[1]){
+                enemy.push(pushData[i]); 
+              }
+
+            console.log('pushData =>' , pushData[i]);
+            }*/
+
+            //console.log("team => " + team);
+
+            /* if(team.length == 5 && enemy.length == 5){
+              console.log('team, enemy => ' ,team,enemy)
+            }*/
+            
+
+
+
+
+            j++;
+            pushData = [];
+
+            //pushData = [];
+            //j++
+            //console.log("============");
+            //rowData.push(pushData);
+            //console.log(pushData);
+          }
+          
+        }
+
+        //console.log("rowData =" + rowData[0]);
 
    
         /**
@@ -317,7 +434,7 @@ function App() {
          */
         
 
-
+        console.log('rowData => ', rowData)
         var winStatusArr = []; //승패 여부 상태 값 
         
         var list = []; //룬을 담는 배열 
@@ -469,7 +586,7 @@ function App() {
 //var tempParty = [] ; 
 
 // 아군 참가자 
-console.log('summonerName=>',summonerName);
+//console.log('summonerName=>',summonerName);
 
 
 
@@ -491,13 +608,13 @@ for(var i = 5; i < 10 ; i++){
     championName : championName[i]
   }
 
-  participantsList2.push(participants2);
+  participantsList.push(participants2);
 }
 
         
-        
-console.log('participantsList=>' , participantsList);
-console.log('participantsList2=>' , participantsList2);
+  console.log('rowData =>', rowData);      
+//console.log('participantsList=>' , participantsList);
+//console.log('participantsList2=>' , participantsList2);
 //console.log('tempParty = > ' , tempParty);
         return(
       <div className="gameDetail"> 
@@ -552,7 +669,29 @@ console.log('participantsList2=>' , participantsList2);
 
                     </div>     
                     </td>
-                    <td> {/*participantsList[index].summonerName*/}</td>
+                  <div className="participants_flex_box">
+                    <div className="teams">
+                    {rowData[index].enemys[0]}<br/>
+                    {rowData[index].enemys[1]}<br/>
+                    {rowData[index].enemys[2]}<br/>
+                    {rowData[index].enemys[3]}<br/>
+                    {rowData[index].enemys[4]}<br/>
+                    </div>
+                    <div className="enemys">
+                    {rowData[index].teams[0]}<br/>
+                    {rowData[index].teams[1]}<br/>
+                    {rowData[index].teams[2]}<br/>
+                    {rowData[index].teams[3]}<br/>
+                    {rowData[index].teams[4]}<br/>
+
+                    </div>
+                    </div>
+                    
+                   
+                   
+
+                    
+                   
 
                  
                     

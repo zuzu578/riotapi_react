@@ -79,3 +79,10 @@
 width: 9%;
   
 }
+.participants_flex_box{
+  display:flex;
+  
+  align-items: center;
+  justify-content: space-between;
+
+}
