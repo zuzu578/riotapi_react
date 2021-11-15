@@ -5,7 +5,7 @@ import axios from 'axios';
 import api_key from './Apikey'; // api key 
 import GetData from './ResultPage.js';
 import {Link , Route } from 'react-router-dom';
-import jquery from 'jquery';
+import jquery, { data } from 'jquery';
 import $ from 'jquery';
 
 
@@ -76,7 +76,7 @@ function App() {
    async function ChangeStatus(e){
 
     setCount(count+5);
-    console.log('count -> ' , count);
+    //console.log('count -> ' , count);
     //console.log("처음 1");
     
     
@@ -142,7 +142,7 @@ function App() {
             * @param matchIdList 
             * @desc puuId 를 이용하여 매치 id 정보들을 가져온 list 를 반복문을 이용하여 매치 상세 정보를 가져옵니다. 
             */
-
+            
             const response4 = await axios.get('https://asia.api.riotgames.com/lol/match/v5/matches/'+response3.data[i]+'',{
               params:{
                 api_key: api_key,
@@ -166,16 +166,23 @@ function App() {
                
                
                 })
+
+                
               )
          
             }
-            
-     
+
           Promise.all(promises).then(()=>{ SetSummonInfo(users)})
           setModalStatus(true);
+
+        
+          
   }
 
-  console.log('getSummonInfo init() => ', getSummonInfo);
+
+ 
+
+  //console.log('getSummonInfo init() => ', getSummonInfo);
     /**
      * @desc 
      * 게임데이터 가져오기 버튼을 클릭하면 렌더링해주는 부분을 true 값으로 설정해줍니다. 
@@ -234,7 +241,7 @@ function App() {
       
         for(var i = 0 ; i < getSummonInfo.length;i++){
           for(var j = 0 ; j < getSummonInfo[i].data.info.participants.length; j++){
-            console.log(getSummonInfo[i].data.info.participants[j].summonerName)
+            //console.log(getSummonInfo[i].data.info.participants[j].summonerName)
 
             summonerName.push(getSummonInfo[i].data.info.participants[j].summonerName)
            championName.push(getSummonInfo[i].data.info.participants[j].championName)
@@ -310,14 +317,15 @@ function App() {
         
         }
       
-        var rowData = [];
+        var rowData = []; // 참가한 소환사 list
+        var champNameData =[]; //참가한 소환사 챔피언 이름 
         var index = []; // 초기 data count 
         for(var i = 1; i < count + 1; i++){
-         console.log('i X 10 ===>' ,i*10);
+        // console.log('i X 10 ===>' ,i*10);
           //console.log(index.push(i*10));
           index.push(i*10)
         }
-        console.log('index =>!!!!!! ' , index);
+       // console.log('index =>!!!!!! ' , index);
       
         var cnt = 0;
         /**
@@ -327,7 +335,7 @@ function App() {
          *  게임 참가자들을 obj 로 만듭니다.
          */
         function Temp(pushData){
-          console.log("pushData2 => " , pushData);
+     //     console.log("pushData2!!!!! => " , pushData);
           var obj = null;
           var subIndex = [5,10]
           var k = 0;
@@ -363,24 +371,79 @@ function App() {
 
 
         }
+
+
+        function ChampPushList(participantsChampion){
+          //console.log("pushData2 => " , pushData);
+          var obj = null;
+          var subIndex = [5,10]
+          var k = 0;
+
+          var team = [];
+          var enemy = []; 
+
+          for(var i = 0 ; i < participantsChampion.length; i++){
+
+            
+            if(i < subIndex[0]){
+              team.push(participantsChampion[i]); 
+            }else if(i > 4 && i < subIndex[1]){
+              enemy.push(participantsChampion[i]); 
+            }
+
+           //console.log('pushData =>' , pushData[i]);
+          }
+
+          //console.log('team, enemy => ' ,team,enemy)
+
+
+
+       
+          var participantsChampionObj  = {
+            teams : team,
+            enemys : enemy,
+          
+          
+      }
+
+          return participantsChampionObj
+
+
+        }
+        
+
+        
+
+
+
         var indexcnt = 0;
         var subData = [];
         var j = 0;
-        var pushData = [];
+        var pushData = []; //참여한 소환사 이름 목록
+        var participantsChampion = [];
+
+        /**
+         * 참가한 소환사 이름을 5대 5로 나눕니다.
+         * 0 ~ 9 (10) 9 19
+         */
         for(var i=0; i < summonerName.length; i++){
 
-          //console.log("i => " , i);
-          if(j > 9){ break; }
+          //console.log("i => " , i);  
+          if(j > 9){ 
+            //console.log("j count ->" , j);
+            break;
+           }
 
           if(i < index[j]){
             //console.log("summonerName -> ",summonerName);
             pushData.push(summonerName[i]);
+          //  console.log("pdata =>",pushData);
           }
         
           //console.log("length = " + pushData);
           if(pushData.length == 10){
-            console.log("j = " + j);
-            console.log("push Data =>" , pushData);
+           // console.log("j = " + j);
+           // console.log("push Data =>" , pushData);
             var obj = null;
             var subIndex = [5,10]
             var k = 0;
@@ -392,41 +455,54 @@ function App() {
             rowData.push(obj);
 
             
-            /*for(var i = 0 ; i < pushData.length; i++){
-
-              /*
-              if(i < subIndex[0]){
-                team.push(pushData[i]); 
-              }else if(i > 4 && i < subIndex[1]){
-                enemy.push(pushData[i]); 
-              }
-
-            console.log('pushData =>' , pushData[i]);
-            }*/
-
-            //console.log("team => " + team);
-
-            /* if(team.length == 5 && enemy.length == 5){
-              console.log('team, enemy => ' ,team,enemy)
-            }*/
-            
-
-
-
-
+           
             j++;
             pushData = [];
 
-            //pushData = [];
-            //j++
-            //console.log("============");
-            //rowData.push(pushData);
-            //console.log(pushData);
+           
           }
           
         }
 
-        //console.log("rowData =" + rowData[0]);
+
+         /**
+         * 참가한 챔피언 이름을 5대 5로 나눕니다.
+         */
+       //   console.log("챔프이름 -> " , championName);
+          for(var i=0; i < summonerName.length; i++){
+
+            //console.log("i => " , i);
+            if(j > 9){ break; }
+  
+            if(i < index[j]){
+              //console.log("summonerName -> ",summonerName);
+              participantsChampion.push(championName[i]);
+            }
+          
+            //console.log("length = " + pushData);
+            if(participantsChampion.length == 10){
+           //   console.log("j = " + j);
+            //  console.log("participantsChampion=>" , participantsChampion);
+              var obj = null;
+              var subIndex = [5,10]
+              var k = 0;
+              // 참가자 
+              var team = [];
+              var enemy = []; 
+              obj = ChampPushList(participantsChampion);
+  
+              champNameData.push(obj);
+  
+              
+             
+              j++;
+              participantsChampion = [];
+  
+          
+            }
+            
+          }
+
 
    
         /**
@@ -434,7 +510,9 @@ function App() {
          */
         
 
-        console.log('rowData => ', rowData)
+       // console.log('rowData => ', rowData)
+       // console.log('champNameData => ', champNameData)
+        
         var winStatusArr = []; //승패 여부 상태 값 
         
         var list = []; //룬을 담는 배열 
@@ -611,8 +689,57 @@ for(var i = 5; i < 10 ; i++){
   participantsList.push(participants2);
 }
 
+/**
+ * 100 개의 데이터가 있으면 10개씩 끊어줍니다.
+ * ex) 0~ 10 , 10 ~ 20 
+ */
+
+// summonerName.length => 100 / 10 
+// [0 ~ 10 , 11 ~ 20 ] 
+
+var idxCal = '';
+var k = 10;
+var q = -1;
+var tempStorage = [];
+for(var i = 0; i <= summonerName.length ; i++){
+
+ 
+  if(q <= k){
+    tempStorage.push(summonerName[i])
+    console.log('tempStorage = = == => ' ,tempStorage[i]);
+
+    
+
+   
+   
+    //break
+    k += 10; // 10 -> 20 
+    i += 10; // 0 -> 10 
+
+    q++
+   
+   // console.log("q" , q);
+   // console.log("i , k " , i-q, k );
+    var v = i-q;
+    var h = k;
+    for(var n = v ; n < h ; n++){
+      console.log('==============')
+      console.log(summonerName[n]);
+    }
+    if(k ==100){
+     //console.log("q , k " , q , k );
+      break;
+    }
+  }else{
+    console.log("초과")
+  }
+
+ 
+
+}
+
         
-  console.log('rowData =>', rowData);      
+ // console.log('rowData =>', rowData);      
 //console.log('participantsList=>' , participantsList);
 //console.log('participantsList2=>' , participantsList2);
 //console.log('tempParty = > ' , tempParty);
@@ -620,8 +747,6 @@ for(var i = 5; i < 10 ; i++){
       <div className="gameDetail"> 
      
           <Table striped bordered hover>
-	
-
         <tbody>
           {myGameChamHistoryList.map(function (listValue,index) {
             return (
@@ -669,24 +794,25 @@ for(var i = 5; i < 10 ; i++){
 
                     </div>     
                     </td>
-                  <div className="participants_flex_box">
+
+                    <div className="participants_flex_box">
                     <div className="teams">
-                    {rowData[index].enemys[0]}<br/>
-                    {rowData[index].enemys[1]}<br/>
-                    {rowData[index].enemys[2]}<br/>
-                    {rowData[index].enemys[3]}<br/>
-                    {rowData[index].enemys[4]}<br/>
+                    <small>{rowData[index].enemys[0]}</small><br/>
+                    <small>{rowData[index].enemys[1]}</small><br/>
+                    <small>{rowData[index].enemys[2]}</small><br/>
+                    <small>{rowData[index].enemys[3]}</small><br/>
+                    <small>{rowData[index].enemys[4]}</small><br/>
                     </div>
                     <div className="enemys">
-                    {rowData[index].teams[0]}<br/>
-                    {rowData[index].teams[1]}<br/>
-                    {rowData[index].teams[2]}<br/>
-                    {rowData[index].teams[3]}<br/>
-                    {rowData[index].teams[4]}<br/>
+                    <small>{rowData[index].teams[0]}</small><br/>
+                    <small>{rowData[index].teams[1]}</small><br/>
+                    <small>{rowData[index].teams[2]}</small><br/>
+                    <small>{rowData[index].teams[3]}</small><br/>
+                    <small>{rowData[index].teams[4]}</small><br/>
 
                     </div>
                     </div>
-                    
+
                    
                    
 
@@ -710,14 +836,6 @@ for(var i = 5; i < 10 ; i++){
         </Table>
 
         
-          
-
-        
-       
-
-
-
-
       </div>
         
 
