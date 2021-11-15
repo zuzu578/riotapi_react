@@ -701,42 +701,31 @@ var idxCal = '';
 var k = 10;
 var q = -1;
 var tempStorage = [];
+
+console.log('summonerName =======>!!@!E2',summonerName);
 for(var i = 0; i <= summonerName.length ; i++){
 
  
   if(q <= k){
-    tempStorage.push(summonerName[i])
-    console.log('tempStorage = = == => ' ,tempStorage[i]);
+    //tempStorage.push(summonerName[i])
+    //console.log('tempStorage = = == => ' ,tempStorage[i]);
 
-    
-
-   
-   
-    //break
     k += 10; // 10 -> 20 
     i += 10; // 0 -> 10 
 
     q++
    
-   // console.log("q" , q);
-   // console.log("i , k " , i-q, k );
     var v = i-q;
-    var h = k;
-    for(var n = v ; n < h ; n++){
-      console.log('==============')
-      console.log(summonerName[n]);
-    }
-    if(k ==100){
-     //console.log("q , k " , q , k );
-      break;
-    }
-  }else{
-    console.log("초과")
+    var tempStartIdx = v-10;
+    var h = k-10;
+    console.log('tempStart => ' , tempStartIdx, h);
+  
   }
 
  
 
 }
+//console.log(tempStorage);
 
         
  // console.log('rowData =>', rowData);      
