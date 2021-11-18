@@ -405,6 +405,7 @@ function App() {
           
           
       }
+      //console.log("participantsChampionObj" , participantsChampionObj);
 
           return participantsChampionObj
 
@@ -465,43 +466,7 @@ function App() {
         }
 
 
-         /**
-         * 참가한 챔피언 이름을 5대 5로 나눕니다.
-         */
-       //   console.log("챔프이름 -> " , championName);
-          for(var i=0; i < summonerName.length; i++){
-
-            //console.log("i => " , i);
-            if(j > 9){ break; }
-  
-            if(i < index[j]){
-              //console.log("summonerName -> ",summonerName);
-              participantsChampion.push(championName[i]);
-            }
-          
-            //console.log("length = " + pushData);
-            if(participantsChampion.length == 10){
-           //   console.log("j = " + j);
-            //  console.log("participantsChampion=>" , participantsChampion);
-              var obj = null;
-              var subIndex = [5,10]
-              var k = 0;
-              // 참가자 
-              var team = [];
-              var enemy = []; 
-              obj = ChampPushList(participantsChampion);
-  
-              champNameData.push(obj);
-  
-              
-             
-              j++;
-              participantsChampion = [];
-  
-          
-            }
-            
-          }
+        
 
 
    
@@ -702,7 +667,7 @@ var k = 10;
 var q = -1;
 var tempStorage = [];
 
-console.log('summonerName =======>!!@!E2',summonerName);
+//console.log('summonerName =======>!!@!E2',summonerName);
 for(var i = 0; i <= summonerName.length ; i++){
 
  
@@ -716,15 +681,33 @@ for(var i = 0; i <= summonerName.length ; i++){
     q++
    
     var v = i-q;
-    var tempStartIdx = v-10;
-    var h = k-10;
-    console.log('tempStart => ' , tempStartIdx, h);
-  
+    var tempStartIdx = v-10; //start 
+    var h = k-10; // end 
+    for(var b = tempStartIdx ; b < h ; b++){
+     // console.log('10개씩 끊은 data! (소환사이름) => ' ,summonerName[b]);
+
+      var summonerParticipantsInfo = {
+
+        summoner:summonerName[b]
+
+      }
+      tempStorage.push(summonerParticipantsInfo);
+    
+      
+    }
+    //console.log('--------------------');
   }
+
+
+
+
+  
+
 
  
 
 }
+
 //console.log(tempStorage);
 
         
