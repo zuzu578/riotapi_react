@@ -1,5 +1,5 @@
 import './App.css';
-import { InputGroup,FormControl,Nav,NavDropdown,Button,Table} from 'react-bootstrap';
+import { InputGroup,FormControl,Nav,NavDropdown,Button,Table,Modal} from 'react-bootstrap';
 import { useState,useEffect } from 'react';
 import axios from 'axios'; 
 import api_key from './Apikey'; // api key 
@@ -25,6 +25,10 @@ function App() {
     setCount(10);
 
   }, []);
+  
+
+
+
   
  
 
@@ -53,8 +57,9 @@ function App() {
   // 게임리스트 가져오기 버튼 상태여부 state 
   let[fetchGameListButton, setFetchGameListButton] = useState(false);
 
-  
- 
+  // 매치 상세보기 버튼 여부 
+  let [DetailMatchButton , setDetailMatchButton] =useState(false); 
+
  /**
   *  소환사의 이름을 input 에서 받아옵니다. 
   * @param {*} e 
@@ -75,7 +80,7 @@ function App() {
 // 이벤트 scroll 시에도 data 를 fetch 할수 있게 합니다.
    async function ChangeStatus(e){
 
-    setCount(count+5);
+    setCount(count+10);
     //console.log('count -> ' , count);
     //console.log("처음 1");
     
@@ -180,7 +185,7 @@ function App() {
   }
 
 
- 
+
 
   //console.log('getSummonInfo init() => ', getSummonInfo);
     /**
@@ -190,6 +195,112 @@ function App() {
      */
     function FetchGameList(){
       setFetchGameListButton(true);
+  
+    }
+    /**
+     * 
+     * @returns 
+     */
+
+
+    let [nowClickGameId , setNowClickGameID ] = useState(); // 해당 현재 행을 클릭시 , 현재 게임아이디를 구한다.
+    let [nowClickRow, setNowClickRow] = useState(); // 현재 클릭한 테이블 행 (row 값을 구한다.);
+
+    function DetailMatch(gameMatchID,obj){
+   
+      setNowClickGameID(gameMatchID);
+
+      if(DetailMatchButton == false){
+        setDetailMatchButton(true);
+      }else{
+        setDetailMatchButton(false);
+      }
+
+
+  
+      //console.log("매치 상세보기 버튼 상태 =>" , DetailMatchButton);
+    }
+
+
+    /**
+     * 상세 매치 내용을 그려줍니다. ( 상세보기 클릭시 ,)
+     * @returns 
+     */
+    let participantsArr = []; //참가한 챔피언 정보 
+    let participantsNameArr = []; // 참가한 소환사 닉네임 정보
+    let perks = [];
+    let perksStyle = []; 
+    let spell1 = [];
+    let spell2 = [];
+
+    let runesList =[];
+    let spellList = [];
+    function DetailMatchRender(){
+      console.log('row length = > ' , getSummonInfo.length);
+      for(let i = 0 ; i < getSummonInfo.length;i++){
+        if(getSummonInfo[i].data.info.gameId == nowClickGameId){
+          for(let q = 0 ; q < getSummonInfo[i].data.info.participants.length ; q ++){
+            console.log(getSummonInfo[i].data.info.participants[q]);
+            participantsNameArr.push(getSummonInfo[i].data.info.participants[q].summonerName);
+            participantsArr.push(getSummonInfo[i].data.info.participants[q].championName);
+
+            
+          }
+        }
+       
+      
+      }
+      /*
+      for(var i=0; i < getSummonInfo.length; i++){
+        var item = {
+              mainPerks : perksStyle[i],
+              subPerks : perks[i]
+        }
+        runesList.push(item);
+    }
+
+    for(var i=0; i < getSummonInfo.length; i++){
+      var spellItems = {
+            spellId1 : spell1[i],
+            spellId2 : spell2[i]
+      }
+      spellList.push(spellItems);
+  }
+  */
+
+
+      
+      return (
+        
+        <Table striped bordered hover>
+          <h1 className="matchTitle">매치정보</h1>
+        <tbody>
+          {getSummonInfo.map(function (listValue,index) {
+            return (
+              <tr key={index}>
+                <td>
+                  <div>
+                  {<img src={'https://opgg-static.akamaized.net/images/lol/champion/'+participantsArr[index]+'.png?image=c_scale,q_auto,w_46&v=1635906101'} alt=""/>}
+                  <small className="smallFont_001">  {participantsNameArr[index]}</small>
+                  </div>
+                  </td>
+                  
+                  
+
+                 
+                   
+            
+                    
+              
+              </tr>
+            );
+          })}
+          
+                 
+        </tbody>
+        </Table>
+
+      )
   
     }
     /**
@@ -235,11 +346,16 @@ function App() {
       var championName = []; 
       var summonerName = [];
 
+      var gameMatchID = [];
+
 
 
       
       
         for(var i = 0 ; i < getSummonInfo.length;i++){
+
+          //console.log("gameId => " , getSummonInfo[i].data.info.gameId);
+          gameMatchID.push(getSummonInfo[i].data.info.gameId);
           for(var j = 0 ; j < getSummonInfo[i].data.info.participants.length; j++){
             //console.log(getSummonInfo[i].data.info.participants[j].summonerName)
 
@@ -654,61 +770,10 @@ for(var i = 5; i < 10 ; i++){
   participantsList.push(participants2);
 }
 
-/**
- * 100 개의 데이터가 있으면 10개씩 끊어줍니다.
- * ex) 0~ 10 , 10 ~ 20 
- */
-
-// summonerName.length => 100 / 10 
-// [0 ~ 10 , 11 ~ 20 ] 
-
-var idxCal = '';
-var k = 10;
-var q = -1;
-var tempStorage = [];
-
 //console.log('summonerName =======>!!@!E2',summonerName);
-for(var i = 0; i <= summonerName.length ; i++){
-
- 
-  if(q <= k){
-    //tempStorage.push(summonerName[i])
-    //console.log('tempStorage = = == => ' ,tempStorage[i]);
-
-    k += 10; // 10 -> 20 
-    i += 10; // 0 -> 10 
-
-    q++
-   
-    var v = i-q;
-    var tempStartIdx = v-10; //start 
-    var h = k-10; // end 
-    for(var b = tempStartIdx ; b < h ; b++){
-     // console.log('10개씩 끊은 data! (소환사이름) => ' ,summonerName[b]);
-
-      var summonerParticipantsInfo = {
-
-        summoner:summonerName[b]
-
-      }
-      tempStorage.push(summonerParticipantsInfo);
-    
-      
-    }
-    //console.log('--------------------');
-  }
 
 
-
-
-  
-
-
- 
-
-}
-
-//console.log(tempStorage);
+//console.log('temp9 => ', temp9);
 
         
  // console.log('rowData =>', rowData);      
@@ -717,7 +782,14 @@ for(var i = 0; i <= summonerName.length ; i++){
 //console.log('tempParty = > ' , tempParty);
         return(
       <div className="gameDetail"> 
-     
+          <div className="view_participants">
+            {
+               DetailMatchButton === true 
+               ? <DetailMatchRender/> 
+               : null
+            }
+          </div>
+        <div>
           <Table striped bordered hover>
         <tbody>
           {myGameChamHistoryList.map(function (listValue,index) {
@@ -766,38 +838,12 @@ for(var i = 0; i <= summonerName.length ; i++){
 
                     </div>     
                     </td>
-
-                    <div className="participants_flex_box">
-                    <div className="teams">
-                    <small>{rowData[index].enemys[0]}</small><br/>
-                    <small>{rowData[index].enemys[1]}</small><br/>
-                    <small>{rowData[index].enemys[2]}</small><br/>
-                    <small>{rowData[index].enemys[3]}</small><br/>
-                    <small>{rowData[index].enemys[4]}</small><br/>
-                    </div>
-                    <div className="enemys">
-                    <small>{rowData[index].teams[0]}</small><br/>
-                    <small>{rowData[index].teams[1]}</small><br/>
-                    <small>{rowData[index].teams[2]}</small><br/>
-                    <small>{rowData[index].teams[3]}</small><br/>
-                    <small>{rowData[index].teams[4]}</small><br/>
-
-                    </div>
-                    </div>
-
-                   
-                   
-
-                    
-                   
-
-                 
-                    
-                    
+                    <td>  <div className="detailButton"><small onClick={ () => DetailMatch(gameMatchID[index],this)}> 상세보기 </small></div></td>
+                    <tr>
+              
+                    </tr>
                   
-                 
-                
-                
+                    
               
               </tr>
             );
@@ -806,7 +852,8 @@ for(var i = 0; i <= summonerName.length ; i++){
                  
         </tbody>
         </Table>
-
+        </div>
+                  
         
       </div>
         
@@ -899,6 +946,12 @@ for(var i = 0; i <= summonerName.length ; i++){
     ? <GetRendering/> 
     : null
   }
+
+
+
+
+
+
    
   
     </div>
