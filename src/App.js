@@ -7,6 +7,7 @@ import GetData from './ResultPage.js';
 import {Link , Route } from 'react-router-dom';
 import jquery, { data } from 'jquery';
 import $ from 'jquery';
+import Q from 'q';
 
 
 
@@ -235,14 +236,40 @@ function App() {
 
     let runesList =[];
     let spellList = [];
+    let summonerLvl = []; 
+    let kills=[];
+    let deaths=[];
+    let assist = [];
+    let kdaCalcul = [];
     function DetailMatchRender(){
       console.log('row length = > ' , getSummonInfo.length);
       for(let i = 0 ; i < getSummonInfo.length;i++){
         if(getSummonInfo[i].data.info.gameId == nowClickGameId){
           for(let q = 0 ; q < getSummonInfo[i].data.info.participants.length ; q ++){
-            console.log(getSummonInfo[i].data.info.participants[q]);
-            participantsNameArr.push(getSummonInfo[i].data.info.participants[q].summonerName);
-            participantsArr.push(getSummonInfo[i].data.info.participants[q].championName);
+              console.log(getSummonInfo[i].data.info.participants[q]);
+              participantsNameArr.push(getSummonInfo[i].data.info.participants[q].summonerName);
+              participantsArr.push(getSummonInfo[i].data.info.participants[q].championName);
+              // 전적 스펠 
+              spell1.push(getSummonInfo[i].data.info.participants[q].summoner1Id);
+              spell2.push(getSummonInfo[i].data.info.participants[q].summoner2Id);
+              // 전적 룬 
+              perksStyle.push(getSummonInfo[i].data.info.participants[q].perks.styles[0].selections[0].perk);
+              perks.push(getSummonInfo[i].data.info.participants[q].perks.styles[1].style)
+              summonerLvl.push(getSummonInfo[i].data.info.participants[q].champLevel)
+              kills.push(getSummonInfo[i].data.info.participants[q].kills)
+              deaths.push(getSummonInfo[i].data.info.participants[q].deaths)
+              assist.push(getSummonInfo[i].data.info.participants[q].assists)
+
+               // kda 계산 
+               if(parseInt(getSummonInfo[i].data.info.participants[q].kills + getSummonInfo[i].data.info.participants[q].assists) / parseInt(getSummonInfo[i].data.info.participants[q].deaths) == Infinity){
+                
+                kdaCalcul.push('Perfect')
+
+              }else{
+
+                kdaCalcul.push(parseInt(getSummonInfo[i].data.info.participants[q].kills + getSummonInfo[i].data.info.participants[q].assists) / parseInt(getSummonInfo[i].data.info.participants[q].deaths))
+              
+              }
 
             
           }
@@ -250,7 +277,7 @@ function App() {
        
       
       }
-      /*
+      
       for(var i=0; i < getSummonInfo.length; i++){
         var item = {
               mainPerks : perksStyle[i],
@@ -266,7 +293,7 @@ function App() {
       }
       spellList.push(spellItems);
   }
-  */
+  
 
 
       
@@ -284,13 +311,17 @@ function App() {
                   <small className="smallFont_001">  {participantsNameArr[index]}</small>
                   </div>
                   </td>
+                  <td>
+                  <img src={'https://z.fow.kr/spell/'+spellList[index].spellId1+'.png'}/>
+                  <br/>
+                  <img src={'https://z.fow.kr/spell/'+spellList[index].spellId2+'.png'}/>
+                  <br/>
+                  <img src={'https://opgg-static.akamaized.net/images/lol/perk/'+runesList[index].mainPerks+'.png?image=c_scale,q_auto,w_22&v=1635906101'}/><br/>
+                  <img src={'https://opgg-static.akamaized.net/images/lol/perkStyle/'+runesList[index].subPerks+'.png?image=c_scale,q_auto,w_22&v=1635906101'}/>
                   
-                  
-
-                 
-                   
-            
-                    
+                  </td>
+                  <td><small>레벨{summonerLvl[index]}</small></td>
+                  <td><small>{kills[index]}/{deaths[index]}/{assist[index]}</small></td>
               
               </tr>
             );
@@ -809,6 +840,7 @@ for(var i = 5; i < 10 ; i++){
                   <br/>
                   <img src={'https://z.fow.kr/spell/'+spellList[index].spellId2+'.png'}/><img src={'https://opgg-static.akamaized.net/images/lol/perk/'+list[index].mainPerks+'.png?image=c_scale,q_auto,w_22&v=1635906101'}/><br/>
                     <img src={'https://opgg-static.akamaized.net/images/lol/perkStyle/'+list[index].subPerks+'.png?image=c_scale,q_auto,w_22&v=1635906101'}/>
+                 
                   <br/>
                      
                   </td>
