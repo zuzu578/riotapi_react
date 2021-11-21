@@ -248,13 +248,50 @@ function App() {
     let gameItems5 = [];
     let gameItems6 = [];
     let gameItems7 = [];
+    let winStatus = [];
+    let individualPosition = [];
+    let goldEarned = [] ;
+    let minionKills = []; 
+    let totalDamageDealtToChampions = []; 
+    let totalDamageTaken = [];
+    let wardsPlaced = []; 
+    let wardsKilled = [];
+
+
     
     function DetailMatchRender(){
       console.log('row length = > ' , getSummonInfo.length);
       for(let i = 0 ; i < getSummonInfo.length;i++){
         if(getSummonInfo[i].data.info.gameId == nowClickGameId){
+
+          
           for(let q = 0 ; q < getSummonInfo[i].data.info.participants.length ; q ++){
+              wardsKilled.push(getSummonInfo[i].data.info.participants[q].wardsKilled);
+              wardsPlaced.push(getSummonInfo[i].data.info.participants[q].wardsPlaced);
+              
+              minionKills.push(getSummonInfo[i].data.info.participants[q].totalMinionsKilled + getSummonInfo[i].data.info.participants[q].neutralMinionsKilled)
               console.log(getSummonInfo[i].data.info.participants[q]);
+              goldEarned.push(getSummonInfo[i].data.info.participants[q].goldEarned);
+              if(getSummonInfo[i].data.info.participants[q].individualPosition == "JUNGLE"){
+                individualPosition.push("정글")
+              }else if(getSummonInfo[i].data.info.participants[q].individualPosition == "TOP"){
+                individualPosition.push("탑")
+              }else if(getSummonInfo[i].data.info.participants[q].individualPosition == "UTILITY"){
+                individualPosition.push("서포터")
+              }else if(getSummonInfo[i].data.info.participants[q].individualPosition == "BOTTOM"){
+                individualPosition.push("원딜")
+              }else if(getSummonInfo[i].data.info.participants[q].individualPosition == "MIDDLE"){
+                individualPosition.push("미드")
+              }
+              
+              // 승패 여부 
+              if(getSummonInfo[i].data.info.participants[q].win == true){
+                winStatus.push('승리')
+              }else{
+                winStatus.push('패배');
+              }
+              totalDamageDealtToChampions.push(getSummonInfo[i].data.info.participants[q].totalDamageDealtToChampions)
+              totalDamageTaken.push(getSummonInfo[i].data.info.participants[q].totalDamageTaken)
               participantsNameArr.push(getSummonInfo[i].data.info.participants[q].summonerName);
               participantsArr.push(getSummonInfo[i].data.info.participants[q].championName);
               // 전적 스펠 
@@ -338,7 +375,7 @@ function App() {
                 <td>
                   <div>
                   {<img src={'https://opgg-static.akamaized.net/images/lol/champion/'+participantsArr[index]+'.png?image=c_scale,q_auto,w_46&v=1635906101'} alt=""/>}
-                  <small className="smallFont_001">  {participantsNameArr[index]}</small>
+                  <small className="smallFont_001">  {participantsNameArr[index]}  ({winStatus[index]})<br/>{individualPosition[index]}</small>
                   </div>
                   </td>
                   <td>
@@ -351,7 +388,7 @@ function App() {
                   
                   </td>
                   <td><small>레벨{summonerLvl[index]}</small></td>
-                  <td><small>{kills[index]}/{deaths[index]}/{assist[index]}<br/> 평점 ({kdaCalcul[index]})</small></td>
+                  <td><small>{kills[index]}/{deaths[index]}/{assist[index]} (cs:{minionKills[index]})<br/> 평점 ({kdaCalcul[index]})</small></td>
                   <td>
                   <div className="items_images">
                     <img src={'https://opgg-static.akamaized.net/images/lol/item/'+itemsList[index].items1+'.png?image=q_auto:best&v=1635906101'}/> 
@@ -361,9 +398,18 @@ function App() {
                     <img src={'https://opgg-static.akamaized.net/images/lol/item/'+itemsList[index].items5+'.png?image=q_auto:best&v=1635906101'}/>
                     <img src={'https://opgg-static.akamaized.net/images/lol/item/'+itemsList[index].items6+'.png?image=q_auto:best&v=1635906101'}/>
                     <img src={'https://opgg-static.akamaized.net/images/lol/item/'+itemsList[index].items7+'.png?image=q_auto:best&v=1635906101'}/>
+                    <br/>
+                    <small>골드({goldEarned[index]})</small>
+                  
+                  
                     </div> 
 
                   </td>
+                  <td><small>딜량:{totalDamageDealtToChampions[index]}<br/>피해량:{totalDamageTaken[index]}</small></td> 
+                  <td>와드설치/제거<small><br/>{wardsPlaced[index]}/{wardsKilled[index]}</small> </td>
+
+                 
+     
               </tr>
             );
           })}
