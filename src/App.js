@@ -81,7 +81,7 @@ function App() {
 // 이벤트 scroll 시에도 data 를 fetch 할수 있게 합니다.
    async function ChangeStatus(e){
 
-    setCount(count+10);
+    setCount(count+5);
     //console.log('count -> ' , count);
     //console.log("처음 1");
     
@@ -241,6 +241,14 @@ function App() {
     let deaths=[];
     let assist = [];
     let kdaCalcul = [];
+    let gameItems1 = [];
+    let gameItems2 = [];
+    let gameItems3 = [];
+    let gameItems4 = [];
+    let gameItems5 = [];
+    let gameItems6 = [];
+    let gameItems7 = [];
+    
     function DetailMatchRender(){
       console.log('row length = > ' , getSummonInfo.length);
       for(let i = 0 ; i < getSummonInfo.length;i++){
@@ -259,6 +267,13 @@ function App() {
               kills.push(getSummonInfo[i].data.info.participants[q].kills)
               deaths.push(getSummonInfo[i].data.info.participants[q].deaths)
               assist.push(getSummonInfo[i].data.info.participants[q].assists)
+              gameItems1.push(getSummonInfo[i].data.info.participants[q].item0)
+              gameItems2.push(getSummonInfo[i].data.info.participants[q].item1)
+              gameItems3.push(getSummonInfo[i].data.info.participants[q].item2)
+              gameItems4.push(getSummonInfo[i].data.info.participants[q].item3)
+              gameItems5.push(getSummonInfo[i].data.info.participants[q].item4)
+              gameItems6.push(getSummonInfo[i].data.info.participants[q].item5)
+              gameItems7.push(getSummonInfo[i].data.info.participants[q].item6)
 
                // kda 계산 
                if(parseInt(getSummonInfo[i].data.info.participants[q].kills + getSummonInfo[i].data.info.participants[q].assists) / parseInt(getSummonInfo[i].data.info.participants[q].deaths) == Infinity){
@@ -270,6 +285,8 @@ function App() {
                 kdaCalcul.push(parseInt(getSummonInfo[i].data.info.participants[q].kills + getSummonInfo[i].data.info.participants[q].assists) / parseInt(getSummonInfo[i].data.info.participants[q].deaths))
               
               }
+
+              
 
             
           }
@@ -294,6 +311,19 @@ function App() {
       spellList.push(spellItems);
   }
   
+  let itemsList = [] ;
+  for(var i=0; i < getSummonInfo.length; i++){
+    var gameItems = {
+          items1 : gameItems1[i],
+          items2 : gameItems2[i],
+          items3 : gameItems3[i],
+          items4 : gameItems4[i],
+          items5 : gameItems5[i],
+          items6 : gameItems6[i],
+          items7 : gameItems7[i],
+    }
+    itemsList.push(gameItems);
+}
 
 
       
@@ -321,8 +351,19 @@ function App() {
                   
                   </td>
                   <td><small>레벨{summonerLvl[index]}</small></td>
-                  <td><small>{kills[index]}/{deaths[index]}/{assist[index]}</small></td>
-              
+                  <td><small>{kills[index]}/{deaths[index]}/{assist[index]}<br/> 평점 ({kdaCalcul[index]})</small></td>
+                  <td>
+                  <div className="items_images">
+                    <img src={'https://opgg-static.akamaized.net/images/lol/item/'+itemsList[index].items1+'.png?image=q_auto:best&v=1635906101'}/> 
+                    <img src={'https://opgg-static.akamaized.net/images/lol/item/'+itemsList[index].items2+'.png?image=q_auto:best&v=1635906101'}/>
+                    <img src={'https://opgg-static.akamaized.net/images/lol/item/'+itemsList[index].items3+'.png?image=q_auto:best&v=1635906101'}/>
+                    <img src={'https://opgg-static.akamaized.net/images/lol/item/'+itemsList[index].items4+'.png?image=q_auto:best&v=1635906101'}/><br/>
+                    <img src={'https://opgg-static.akamaized.net/images/lol/item/'+itemsList[index].items5+'.png?image=q_auto:best&v=1635906101'}/>
+                    <img src={'https://opgg-static.akamaized.net/images/lol/item/'+itemsList[index].items6+'.png?image=q_auto:best&v=1635906101'}/>
+                    <img src={'https://opgg-static.akamaized.net/images/lol/item/'+itemsList[index].items7+'.png?image=q_auto:best&v=1635906101'}/>
+                    </div> 
+
+                  </td>
               </tr>
             );
           })}
