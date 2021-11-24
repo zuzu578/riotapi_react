@@ -28,12 +28,6 @@ function App() {
   }, []);
   
 
-
-
-  
- 
-
-
   // 검색한 소환사의 이름을 저장하는 state 
   let [summonerName , setSummonerName] = useState(null);
  
@@ -60,6 +54,10 @@ function App() {
 
   // 매치 상세보기 버튼 여부 
   let [DetailMatchButton , setDetailMatchButton] =useState(false); 
+
+  let [encryptedId , setEncryptedId] = useState(null);
+
+  let [ingameList , setIngameList ] = useState(null);
 
  /**
   *  소환사의 이름을 input 에서 받아옵니다. 
@@ -100,13 +98,38 @@ function App() {
                api_key: api_key,
               }
             })
-           // console.log('resdata ! => 1 ',response.data);
+           //console.log('resdata ! => 1 ',response.data);
             setUserInfo(response.data);
+            setEncryptedId(response.data.id);
   
             var convertingDate = new Date(response.data.revisionDate);
             var date = convertingDate;
             //console.log(date);
             setRevDate(date);
+        /**
+         * @param encrytedSummonerId(response.data.id)
+         * @description 암호화된 소환사의 id 를 이용하여 인게임 정보를 가져온다.
+         * setIngameList() 
+         */
+        try{
+          const fetchIngame = await axios.get('https://kr.api.riotgames.com/lol/spectator/v4/active-games/by-summoner/'+response.data.id+'',{
+          params:{
+            api_key : api_key,
+          }
+        })
+        //console.log("fetchIngame!! => " ,fetchIngame.data);
+        // console.log(fetchIngame.data);
+         setIngameList(fetchIngame.data);
+        }catch(error){
+          
+          //console.log('이 소환사는 현재 게임중이 아닙니다! ', error);
+          //setIngameList(''+summonerName+'님은 게임중이 아닙니다.')
+         //setIngameList('이소환사는 현재 게임중이 아닙니다.')
+        }
+        
+      
+     
+
 
             //console.log("setUserInfo() set State 2 ");
         /**
@@ -260,7 +283,7 @@ function App() {
 
     
     function DetailMatchRender(){
-      console.log('row length = > ' , getSummonInfo.length);
+      //console.log('row length = > ' , getSummonInfo.length);
       for(let i = 0 ; i < getSummonInfo.length;i++){
         if(getSummonInfo[i].data.info.gameId == nowClickGameId){
 
@@ -365,7 +388,7 @@ function App() {
 
       
       return (
-        
+      <div className="matchInfoTable">
         <Table striped bordered hover>
           <h1 className="matchTitle">매치정보</h1>
         <tbody>
@@ -417,6 +440,8 @@ function App() {
                  
         </tbody>
         </Table>
+
+        </div>
 
       )
   
@@ -983,6 +1008,157 @@ for(var i = 5; i < 10 ; i++){
         )
       }
 
+      let [showIngameModalStatus , setShowIngameModalStatus] = useState(false);
+      /**
+       * ingame 정보 data modal 창 on off 여부 
+       */
+      const ShowIngameModal = ()=>{
+       // console.log("Ingame!", encryptedId);
+        if(showIngameModalStatus === false){
+          setShowIngameModalStatus(true);
+        }else{
+          setShowIngameModalStatus(false);
+        }
+      }
+      let [ingameUserRank , setIngameUserRank] = useState(null);
+      /**
+       * 10명의 인게임 , 소환사 리그 정보를 가져옵니다.
+       */
+      const getIngameUserLeague = async(summonerId) =>{
+        console.log('summonerId' , summonerId);
+        
+        
+        //console.log(summonerId);
+        /*
+        let users = [];
+        let promises = [];
+            for (let i = 0; i < 9; i++) {
+              promises.push(
+                axios.get('https://kr.api.riotgames.com/lol/league/v4/entries/by-summoner/'+summonerId[i]+'',{
+                  params:{
+                    api_key:api_key,
+                  }
+                })
+                .then(response => {
+                  // do something with response
+                  users.push(response);
+                  
+                }) 
+              )
+            }
+          Promise.all(promises).then(()=>{ setIngameUserRank(users)})
+          */
+        /*
+       for(let i = 0 ; i < summonerId.length; i++){
+         console.log('hello')
+         const getUserLeague = await axios.get('https://kr.api.riotgames.com/lol/league/v4/entries/by-summoner/'+summonerId[i]+'',{
+          params:{
+            api_key:api_key,
+          }
+        });
+       }
+       */
+        /*
+       
+        */
+
+        //console.log('getUserLeague =>' , getUserLeague);
+         
+
+      }
+
+      const RenderingIngameUserRank = () =>{
+        //console.log('ingameUserRank=>' , ingameUserRank);
+        return(
+          <div> 
+            <h1> hello world</h1>
+          </div>
+
+        )
+      }
+
+      /**
+       * 인게임 정보 데이터 보여주기 ( rendering )
+       */
+      const ShowIngameRender =() =>{
+       // console.log('ingameList',ingameList.gameId);
+        let data = ingameList;
+        let summonerObj = {};
+        let objList = [];
+        let summonerId = [];
+        
+       
+        /*  */
+        try{
+          //console.log('data.participants.length => ' ,data.participants.length);
+          for(let i = 0 ; i < data.participants.length ; i++){
+            //console.log(data.participants[i].summonerId);
+            summonerId.push(data.participants[i].summonerId)
+          
+
+            summonerObj={
+              profileIcon : data.participants[i].profileIconId,
+              summonerName: data.participants[i].summonerName,
+              spell1Id: data.participants[i].spell1Id,
+              spell2Id: data.participants[i].spell2Id,
+              perkStyle : data.participants[i].perks.perkIds[0],
+              perkSubStyle: data.participants[i].perks.perkSubStyle,
+              bannedChampions : data.bannedChampions[i].championId,
+
+            }
+            objList.push(summonerObj);
+        }
+       
+        getIngameUserLeague(summonerId);
+       
+        return (
+          <Table striped bordered hover>
+            <h1 className="ingametitle">인게임 정보</h1>
+          <tbody>
+            {objList.map(function (items,index) {
+              return (
+                <tr key={index}>
+                  <td> 
+                    <div className="imageC">
+                      <img src={'https://opgg-static.akamaized.net/images/profile_icons/profileIcon'+objList[index].profileIcon+'.jpg?image=q_auto:best&v=1518361200'} alt=""/>
+                      <small><span className="para2">{objList[index].summonerName}</span></small>
+                    </div> 
+                  </td>
+                  <td>
+                  <div className="runeImages2">
+                    <img src={'https://opgg-static.akamaized.net/images/lol/perk/'+objList[index].perkStyle+'.png?image=c_scale,q_auto,w_22&v=1635906101'}/><br/>
+                    <img src={'https://opgg-static.akamaized.net/images/lol/perkStyle/'+objList[index].perkSubStyle+'.png?image=c_scale,q_auto,w_22&v=1635906101'}/>
+                  </div>
+                  </td>
+                  <td>{objList[index].bannedChampions}</td>
+                  <td><RenderingIngameUserRank/></td>
+       
+                </tr>
+              );
+            })}
+            
+                   
+          </tbody>
+          </Table>
+  
+        )
+          }catch(error){
+            return(
+              <div> 
+                <div className="notPlayingGame">
+                  <h1> '{summonerName}'님은 게임중이 아닙니다.</h1>
+                  <p>현재 게임중이라면 다시 시도해주세요.</p>
+                  <p>('Bot'은 RiotAPI에서 인게임 정보를 가져올 수 없습니다.)</p>
+                </div>
+              </div>
+            )
+          }
+
+       
+       
+       
+      }
+
   
 
   /**
@@ -1008,7 +1184,15 @@ for(var i = 5; i < 10 ; i++){
            
         
         <div>최근전적검색 : {getUserInfo.revisionDate} </div>
+        <div className="liveGame_info">
+          <Button variant="primary" onClick={ShowIngameModal}>인게임 정보</Button>
+        </div>
 
+        {
+          showIngameModalStatus === true
+          ? <ShowIngameRender/>
+          : null 
+        }
 
         <div>  </div>
         <div className="rankArea"><img src={'https://opgg-static.akamaized.net/images/medals/'+getUserRank.tier+'_1.png?image=q_auto:best&v=1'}/> 

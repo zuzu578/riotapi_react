@@ -98,3 +98,33 @@ width: 9%;
 
   font-weight: bold;
 }
+.liveGame_info{
+  margin-top:10px;
+
+}
+.ingametitle{
+
+  text-align: center;
+}
+.imageC img{
+  width:8%;
+}
+.para2{
+  font-weight: bold;
+  font-size:15px;
+  padding-left:10px;
+
+
+}
+.notPlayingGame{
+  margin-top:25px;
+  border:1px solid grey;
+  padding:10px;
+  text-align: center;
+}
+.runeImages2 img{
+  width:30%;
+}
+.matchInfoTable{
+  margin-bottom: 200px;
+}
