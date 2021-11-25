@@ -149,8 +149,9 @@ function App() {
          * 
          */
         try{
+          
           for( let i = 0 ; i < setIdLists.length ; i++){
-            //console.log('setIdLists -> ' ,setIdLists[i]);
+          //console.log('setIdLists -> ' ,setIdLists[i]);
             const getParticipantsLeague = await axios.get('https://kr.api.riotgames.com/lol/league/v4/entries/by-summoner/'+setIdLists[i]+'',{
               params:{
                 api_key : api_key,
@@ -159,8 +160,30 @@ function App() {
             //console.log(getParticipantsLeague.data[0].rank);
             //console.log('getParticipantsLeague =>' , getParticipantsLeague.data[0].summonerName);
             //console.log('tier',getParticipantsLeague.data[0].tier);
-            ingameRankArr.push(getParticipantsLeague.data[0].tier);
+            /**
+             *  인게임 정보 소환사들의 league 를 가져온다. 
+             */
+            
+            for(let i = 0 ; i < getParticipantsLeague.data.length ; i++){
+             // console.log('ingameUserRankData' ,getParticipantsLeague.data);
+              // 솔로랭크 정보만 가져옵니다.
+              if(getParticipantsLeague.data[i].queueType == 'RANKED_SOLO_5x5'){
+              
+             
+                let obj = {
+                  tier : getParticipantsLeague.data[i].tier,
+                  rank : getParticipantsLeague.data[i].rank,
+                  summonerName : getParticipantsLeague.data[i].summonerName,
+                  leaguePoints : getParticipantsLeague.data[i].leaguePoints,
+                }
+                ingameRankArr.push(obj);
+
+              }
+            }
+
+            //ingameRankArr.push(getParticipantsLeague.data[0].tier);
             setUserArr(ingameRankArr);
+
 
 
             /*
@@ -339,6 +362,7 @@ function App() {
       //console.log('row length = > ' , getSummonInfo.length);
       for(let i = 0 ; i < getSummonInfo.length;i++){
         if(getSummonInfo[i].data.info.gameId == nowClickGameId){
+          
 
           
           for(let q = 0 ; q < getSummonInfo[i].data.info.participants.length ; q ++){
@@ -543,7 +567,8 @@ function App() {
       var summonerName = [];
 
       var gameMatchID = [];
-
+      
+      let gameCreation = [];
 
 
       
@@ -561,7 +586,13 @@ function App() {
             // 검색한 소환사의 플레이정보를 가져옵니다 
             if(getSummonInfo[i].data.info.participants[j].summonerName == getUserInfo.name){
               //console.log(getSummonInfo[i].data.info)
+              //console.log('검색한 소환사 데이터',getSummonInfo[i].data.info.gameCreation);
+              let creationDate2 = new Date(getSummonInfo[i].data.info.gameCreation).toString();
+              //console.log(creationDate2);
+              let creationDate = creationDate2.replace('GMT+0900 (한국 표준시)','').toString();
+              //console.log('creationDate =>',creationDate);
 
+              gameCreation.push(creationDate);
 
               // 제어와드  설치 갯수  participants[j].detectorWardsPlaced
               //console.log('와드 => ' , getSummonInfo[i].data.info.participants[j].detectorWardsPlaced)
@@ -1000,6 +1031,7 @@ for(var i = 5; i < 10 ; i++){
                   <small>{listValue}</small>
 
                   </td>
+                  <td><small>{gameCreation[index]}</small></td>
                   <td>
                   <img src={'https://z.fow.kr/spell/'+spellList[index].spellId1+'.png'}/>
                   <br/>
@@ -1073,39 +1105,27 @@ for(var i = 5; i < 10 ; i++){
           setShowIngameModalStatus(false);
         }
       }
-      let [ingameUserRank , setIngameUserRank] = useState(null);
-      /**
-       * 10명의 인게임 , 소환사 리그 정보를 가져옵니다.
-       */
-      const getIngameUserLeague =(summonerId) =>{
-        
-      }
-
-      const RenderingIngameUserRank = () =>{
-        //console.log('ingameUserRank=>' , ingameUserRank);
-        return(
-          <div> 
-            <small> test </small>
-          </div>
-
-        )
-      }
-
+     
       /**
        * 인게임 정보 데이터 보여주기 ( rendering )
        */
       const ShowIngameRender =() =>{
-      // console.log('ingameUserRankArr',ingameUserRankArr);
-      console.log('ingameRankArr ====>' ,ingameRankArr);
+      //console.log('ingameUserRankArr',ingameUserRankArr);
+      //console.log('ingameRankArr ====>' ,ingameUserRankArr);
         let data = ingameList;
         let summonerObj = {};
         let objList = [];
         let summonerId = [];
+        //let createGameTime = [];
+        let date = ''; 
         
        
         /*  */
         try{
-          console.log('data.participants => ' ,data);
+          //console.log('인게임 정보 데이터! => ' ,data);
+          date = new Date(data.gameStartTime);
+          
+        
           for(let i = 0 ; i < data.participants.length ; i++){
             //console.log(data.participants[i].summonerId);
             summonerId.push(data.participants[i].summonerId)
@@ -1118,6 +1138,7 @@ for(var i = 5; i < 10 ; i++){
               spell2Id: data.participants[i].spell2Id,
               perkStyle : data.participants[i].perks.perkIds[0],
               perkSubStyle: data.participants[i].perks.perkSubStyle,
+              
               //bannedChampions : data.bannedChampions[i].championId,
 
             }
@@ -1125,11 +1146,14 @@ for(var i = 5; i < 10 ; i++){
         }
        
         //getIngameUserLeague(summonerId);
-       
+        console.log("timestamp to date =>" , date.toString());
         return (
+          
           <Table striped bordered hover>
-            <h1 className="ingametitle">인게임 정보</h1>
+            
+            <h1 className="ingametitle">인게임 정보 ({data.gameMode})</h1>
           <tbody>
+            <th><small>게임시작일 :{date.toString()}</small></th>
             {objList.map(function (items,index) {
               return (
                 <tr key={index}>
@@ -1137,7 +1161,9 @@ for(var i = 5; i < 10 ; i++){
                     <div className="imageC">
                       <img src={'https://opgg-static.akamaized.net/images/profile_icons/profileIcon'+objList[index].profileIcon+'.jpg?image=q_auto:best&v=1518361200'} alt=""/>
                       <small><span className="para2">{objList[index].summonerName}</span></small>
+                    
                     </div> 
+                   
                   </td>
                   <td>
                   <div className="runeImages2">
@@ -1145,8 +1171,17 @@ for(var i = 5; i < 10 ; i++){
                     <img src={'https://opgg-static.akamaized.net/images/lol/perkStyle/'+objList[index].perkSubStyle+'.png?image=c_scale,q_auto,w_22&v=1635906101'}/>
                   </div>
                   </td>
+                  <td>
+                    <small>
+                      <img src={'https://opgg-static.akamaized.net/images/medals/'+ingameUserRankArr[index].tier+'_1.png?image=c_scale,q_auto,c_scale,w_30&v=1'}/>
+                      
+                    </small>
+                    <small>{ingameUserRankArr[index].tier}({ingameUserRankArr[index].leaguePoints} LP) </small>
+                  </td>
+             
                 
-                  <td><RenderingIngameUserRank/></td>
+                
+                
        
                 </tr>
               );
@@ -1182,7 +1217,11 @@ for(var i = 5; i < 10 ; i++){
    * @returns 
    */
   const GetRendering  = ()=> { 
-    
+
+    //console.log("getRender! ", getUserInfo.revisionDate);
+    let revisionDate2 = new Date(getUserInfo.revisionDate).toString();
+    let revisionDate = revisionDate2.replace('GMT+0900 (한국 표준시)','');
+   //console.log('revisionDate',revisionDate2.replace('GMT+0900 (한국 표준시)',''));
 
           try{
             return(
@@ -1200,7 +1239,7 @@ for(var i = 5; i < 10 ; i++){
                   </h1>
                   
                 
-                <div>최근전적검색 : {getUserInfo.revisionDate} </div>
+                <div><small>최근 업데이트: {revisionDate.toString()}</small></div>
                 <div className="liveGame_info">
                   <Button variant="primary" onClick={ShowIngameModal}>인게임 정보</Button>
                 </div>
@@ -1256,7 +1295,7 @@ for(var i = 5; i < 10 ; i++){
                   </h1>
                   
                 
-                <div>최근전적검색 : {getUserInfo.revisionDate} </div>
+                <div><small>최근 업데이트: {revisionDate.toString()}</small></div>
                
                 <div className="liveGame_info">
                   

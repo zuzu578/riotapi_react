@@ -105,6 +105,8 @@ width: 9%;
 .ingametitle{
 
   text-align: center;
+  
+
 }
 .imageC img{
   width:8%;
@@ -123,7 +125,7 @@ width: 9%;
   text-align: center;
 }
 .runeImages2 img{
-  width:30%;
+  width:50%;
 }
 .matchInfoTable{
   margin-bottom: 200px;
