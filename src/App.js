@@ -569,13 +569,24 @@ function App() {
       var gameMatchID = [];
       
       let gameCreation = [];
+      let timeMinuets = [];
 
 
       
       
         for(var i = 0 ; i < getSummonInfo.length;i++){
 
-          //console.log("gameId => " , getSummonInfo[i].data.info.gameId);
+          //console.log("edata => " , getSummonInfo[i].data.info.gameDuration);
+          //let durationTimeData = new Date(getSummonInfo[i].data.info.gameDuration)
+          var timestamp = getSummonInfo[i].data.info.gameDuration;
+
+          // 시간으로 계산할경우
+          var hours = Math.floor(timestamp / 60 / 60);
+          // 분으로 계산할 경우
+          var minutes = Math.floor(timestamp / 60);
+          timeMinuets.push(minutes);
+          //console.log('minutes',minutes);
+
           gameMatchID.push(getSummonInfo[i].data.info.gameId);
           for(var j = 0 ; j < getSummonInfo[i].data.info.participants.length; j++){
             //console.log(getSummonInfo[i].data.info.participants[j].summonerName)
@@ -1023,8 +1034,10 @@ for(var i = 5; i < 10 ; i++){
             return (
               <tr key={index}>
                 <td>   {gameMod[index].gameModes}<br/>
-                    <small>{winStatusArr[index].win}</small><br/></td>
-                  <td>
+                    <small>{winStatusArr[index].win}</small><br/>
+                    <small>{timeMinuets[index]}분</small>
+                </td>
+                <td>
                  
                     {<img src={'https://opgg-static.akamaized.net/images/lol/champion/'+listValue+'.png?image=c_scale,q_auto,w_46&v=1635906101'} alt=""/>}<br/>
                        
@@ -1044,9 +1057,6 @@ for(var i = 5; i < 10 ; i++){
 
                   <td>{kdaList[index].kill}/{kdaList[index].death}/{kdaList[index].assist}<br/>
                   <small>{kdaCalculList[index].kdaCalculate} 평점</small>
-                  
-                  
-                  
                   </td>
                   <td>레벨{champLevels[index].championLevels} <br/> <small>({csKills[index].cs}) CS</small></td>
                   
