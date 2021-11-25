@@ -59,6 +59,14 @@ function App() {
 
   let [ingameList , setIngameList ] = useState(null);
 
+  let setIdLists = [];
+
+  let [ingameUserRankArr,setUserArr] = useState(null);
+
+  let ingameRankArr = [];
+
+
+
  /**
   *  소환사의 이름을 input 에서 받아옵니다. 
   * @param {*} e 
@@ -79,7 +87,8 @@ function App() {
 // 이벤트 scroll 시에도 data 를 fetch 할수 있게 합니다.
    async function ChangeStatus(e){
 
-    setCount(count+5);
+    //setCount(count+5); 클릭할때마다 전적 5개씩 추가해서 fetch !
+
     //console.log('count -> ' , count);
     //console.log("처음 1");
     
@@ -118,7 +127,14 @@ function App() {
           }
         })
         //console.log("fetchIngame!! => " ,fetchIngame.data);
-        // console.log(fetchIngame.data);
+
+        for(let i = 0 ; i < fetchIngame.data.participants.length;i++){
+         // console.log('fetchIngame.data =>',fetchIngame.data.participants[i].summonerId);
+          setIdLists.push(fetchIngame.data.participants[i].summonerId);
+        }
+
+        //console.log('setIdLists',setIdLists);
+       
          setIngameList(fetchIngame.data);
         }catch(error){
           
@@ -126,9 +142,46 @@ function App() {
           //setIngameList(''+summonerName+'님은 게임중이 아닙니다.')
          //setIngameList('이소환사는 현재 게임중이 아닙니다.')
         }
+
+        /**
+         * @params setIdLists[]
+         * @description 현재 인게임 정보의 소환사들의 league 정보를 가져옵니다.
+         * 
+         */
+        try{
+          for( let i = 0 ; i < setIdLists.length ; i++){
+            //console.log('setIdLists -> ' ,setIdLists[i]);
+            const getParticipantsLeague = await axios.get('https://kr.api.riotgames.com/lol/league/v4/entries/by-summoner/'+setIdLists[i]+'',{
+              params:{
+                api_key : api_key,
+              }
+            })
+            //console.log(getParticipantsLeague.data[0].rank);
+            //console.log('getParticipantsLeague =>' , getParticipantsLeague.data[0].summonerName);
+            //console.log('tier',getParticipantsLeague.data[0].tier);
+            ingameRankArr.push(getParticipantsLeague.data[0].tier);
+            setUserArr(ingameRankArr);
+
+
+            /*
+            let obj = {
+              rank : getParticipantsLeague.data[i].rank,
+              tier : getParticipantsLeague.data[i].tier,
+            }
+
+            ingameUserRankArr.push(obj);
+            */
+
+
+          }
+          
+
+        }catch(error){
+          console.log(error);
+        }
         
       
-     
+        
 
 
             //console.log("setUserInfo() set State 2 ");
@@ -145,7 +198,7 @@ function App() {
               })
               //console.log('resdata ! => 2',response2.data);
               for(var i = 0 ; i < Object.keys(response2.data).length;i++){
-              
+                console.log('검색한 소환사의 리그정보! ->',response2.data);
                 setUserRank(response2.data[i]);
               }
              // console.log("setUserRank() set State 3 ");
@@ -1024,54 +1077,15 @@ for(var i = 5; i < 10 ; i++){
       /**
        * 10명의 인게임 , 소환사 리그 정보를 가져옵니다.
        */
-      const getIngameUserLeague = async(summonerId) =>{
-        console.log('summonerId' , summonerId);
+      const getIngameUserLeague =(summonerId) =>{
         
-        
-        //console.log(summonerId);
-        /*
-        let users = [];
-        let promises = [];
-            for (let i = 0; i < 9; i++) {
-              promises.push(
-                axios.get('https://kr.api.riotgames.com/lol/league/v4/entries/by-summoner/'+summonerId[i]+'',{
-                  params:{
-                    api_key:api_key,
-                  }
-                })
-                .then(response => {
-                  // do something with response
-                  users.push(response);
-                  
-                }) 
-              )
-            }
-          Promise.all(promises).then(()=>{ setIngameUserRank(users)})
-          */
-        /*
-       for(let i = 0 ; i < summonerId.length; i++){
-         console.log('hello')
-         const getUserLeague = await axios.get('https://kr.api.riotgames.com/lol/league/v4/entries/by-summoner/'+summonerId[i]+'',{
-          params:{
-            api_key:api_key,
-          }
-        });
-       }
-       */
-        /*
-       
-        */
-
-        //console.log('getUserLeague =>' , getUserLeague);
-         
-
       }
 
       const RenderingIngameUserRank = () =>{
         //console.log('ingameUserRank=>' , ingameUserRank);
         return(
           <div> 
-            <h1> hello world</h1>
+            <small> test </small>
           </div>
 
         )
@@ -1081,7 +1095,8 @@ for(var i = 5; i < 10 ; i++){
        * 인게임 정보 데이터 보여주기 ( rendering )
        */
       const ShowIngameRender =() =>{
-       // console.log('ingameList',ingameList.gameId);
+      // console.log('ingameUserRankArr',ingameUserRankArr);
+      console.log('ingameRankArr ====>' ,ingameRankArr);
         let data = ingameList;
         let summonerObj = {};
         let objList = [];
@@ -1090,7 +1105,7 @@ for(var i = 5; i < 10 ; i++){
        
         /*  */
         try{
-          //console.log('data.participants.length => ' ,data.participants.length);
+          console.log('data.participants => ' ,data);
           for(let i = 0 ; i < data.participants.length ; i++){
             //console.log(data.participants[i].summonerId);
             summonerId.push(data.participants[i].summonerId)
@@ -1103,13 +1118,13 @@ for(var i = 5; i < 10 ; i++){
               spell2Id: data.participants[i].spell2Id,
               perkStyle : data.participants[i].perks.perkIds[0],
               perkSubStyle: data.participants[i].perks.perkSubStyle,
-              bannedChampions : data.bannedChampions[i].championId,
+              //bannedChampions : data.bannedChampions[i].championId,
 
             }
             objList.push(summonerObj);
         }
        
-        getIngameUserLeague(summonerId);
+        //getIngameUserLeague(summonerId);
        
         return (
           <Table striped bordered hover>
@@ -1130,7 +1145,7 @@ for(var i = 5; i < 10 ; i++){
                     <img src={'https://opgg-static.akamaized.net/images/lol/perkStyle/'+objList[index].perkSubStyle+'.png?image=c_scale,q_auto,w_22&v=1635906101'}/>
                   </div>
                   </td>
-                  <td>{objList[index].bannedChampions}</td>
+                
                   <td><RenderingIngameUserRank/></td>
        
                 </tr>
@@ -1143,6 +1158,7 @@ for(var i = 5; i < 10 ; i++){
   
         )
           }catch(error){
+           // console.log("error in game ! =>" ,error);
             return(
               <div> 
                 <div className="notPlayingGame">
@@ -1166,100 +1182,167 @@ for(var i = 5; i < 10 ; i++){
    * @returns 
    */
   const GetRendering  = ()=> { 
- 
-    return(
+    
+
+          try{
+            return(
 
 
-      <div className="renderingSummonerInfo">
+              <div className="renderingSummonerInfo">
+        
+                <h1>
+                  <div className="image_box">
+        
+                  <img src={'https://opgg-static.akamaized.net/images/profile_icons/profileIcon'+getUserInfo.profileIconId+'.jpg?image=q_auto:best&v=1518361200'} alt=""/>
+                  {getUserInfo.name}(Lv:{getUserInfo.summonerLevel})   
+                
+                  </div>
+                  </h1>
+                  
+                
+                <div>최근전적검색 : {getUserInfo.revisionDate} </div>
+                <div className="liveGame_info">
+                  <Button variant="primary" onClick={ShowIngameModal}>인게임 정보</Button>
+                </div>
+        
+                {
+                  showIngameModalStatus === true
+                  ? <ShowIngameRender/>
+                  : null 
+                }
+        
+                <div>  </div>
+                <div className="rankArea">
+                  <img src={'https://opgg-static.akamaized.net/images/medals/'+getUserRank.tier+'_1.png?image=q_auto:best&v=1'}/> 
+                <span className="tier">{getUserRank.tier} {getUserRank.rank}</span>
+                <div> {getUserRank.queueType}</div>
+                {getUserRank.leaguePoints}LP / 승: {getUserRank.wins} 패 : {getUserRank.losses}</div>
+                
+                {
+                fetchGameListButton === true 
+                ? <RenderingGameList/> 
+                : null
+                }
+                <div className="fetchingButton" onClick={FetchGameList}>
+                <span>게임 데이터 가져오기 </span>
+                </div>
+                
+            
+                <div>
+                
+              
+        
+        
+                </div>
+              
+              
+              </div>
+            )
 
-       
-        <h1>
-          <div className="image_box">
+          }catch(error){
+            console.log(' 해당소환사는 언랭 입니다.');
+            return(
 
-          <img src={'https://opgg-static.akamaized.net/images/profile_icons/profileIcon'+getUserInfo.profileIconId+'.jpg?image=q_auto:best&v=1518361200'} alt=""/>
-          {getUserInfo.name}(Lv:{getUserInfo.summonerLevel})   
+
+              <div className="renderingSummonerInfo">
+        
+                <h1>
+                  <div className="image_box">
+        
+                  <img src={'https://opgg-static.akamaized.net/images/profile_icons/profileIcon'+getUserInfo.profileIconId+'.jpg?image=q_auto:best&v=1518361200'} alt=""/>
+                  {getUserInfo.name}(Lv:{getUserInfo.summonerLevel})   
+                
+                  </div>
+                  </h1>
+                  
+                
+                <div>최근전적검색 : {getUserInfo.revisionDate} </div>
+               
+                <div className="liveGame_info">
+                  
+                  <Button variant="primary" onClick={ShowIngameModal}>인게임 정보</Button>
+                </div>
+        
+                {
+                  showIngameModalStatus === true
+                  ? <ShowIngameRender/>
+                  : null 
+                }
+        
+                <div>  </div>
+                <div className="rankArea">
+                  <img src="https://opgg-static.akamaized.net/images/medals/default.png?image=q_auto:best&v=1"></img>
+                <span className="tier"> unranked</span>
+                <div> </div>
+                </div>
+                
+                {
+                fetchGameListButton === true 
+                ? <RenderingGameList/> 
+                : null
+                }
+                <div className="fetchingButton" onClick={FetchGameList}>
+                <span>게임 데이터 가져오기 </span>
+                </div>
+                
+            
+                <div>
+                
+              
+        
+        
+                </div>
+              
+              
+              </div>
+            )
+
+          }
+            
+
+          
+      
+          
+        }
+          
+
+      
+        return (
+          <div className="App">
+            <div className="container">
+            <div className="row">
+              <div className="banner_image"> <img src="https://opgg-static.akamaized.net/logo/20211101145723.6a89d9d257114f1eba3ad2682885f0fa.png"></img></div>
+              <InputGroup className="mb-3">
+          
+          <FormControl
+            placeholder="Username"
+            aria-label="Username"
+            aria-describedby="basic-addon1"
+            onChange={GetSummonerName}
+            id="searchByName"
+            name="searchByName"
+          />
+          <Button variant="primary" onClick={ChangeStatus}>검색</Button>{' '}
+        </InputGroup>
+            
+            </div>                
+        </div>
+        {
+          modalStatus === true 
+          ? <GetRendering/> 
+          : null
+        }
+
+
+
+
+
+
+        
         
           </div>
-           </h1>
-           
-        
-        <div>최근전적검색 : {getUserInfo.revisionDate} </div>
-        <div className="liveGame_info">
-          <Button variant="primary" onClick={ShowIngameModal}>인게임 정보</Button>
-        </div>
-
-        {
-          showIngameModalStatus === true
-          ? <ShowIngameRender/>
-          : null 
-        }
-
-        <div>  </div>
-        <div className="rankArea"><img src={'https://opgg-static.akamaized.net/images/medals/'+getUserRank.tier+'_1.png?image=q_auto:best&v=1'}/> 
-        <span className="tier">{getUserRank.tier} {getUserRank.rank}</span>
-        <div> {getUserRank.queueType}</div>
-        {getUserRank.leaguePoints}LP / 승: {getUserRank.wins} 패 : {getUserRank.losses}</div>
-        
-        {
-        fetchGameListButton === true 
-        ? <RenderingGameList/> 
-        : null
-        }
-        <div className="fetchingButton" onClick={FetchGameList}>
-        <span>게임 데이터 가져오기 </span>
-        </div>
-        
-    
-        <div>
-         
-       
-
-
-        </div>
-       
-      
-      </div>
-    )
-  }
-    
-
- 
-  return (
-    <div className="App">
-      <div className="container">
-      <div className="row">
-        <div className="banner_image"> <img src="https://opgg-static.akamaized.net/logo/20211101145723.6a89d9d257114f1eba3ad2682885f0fa.png"></img></div>
-        <InputGroup className="mb-3">
-    
-    <FormControl
-      placeholder="Username"
-      aria-label="Username"
-      aria-describedby="basic-addon1"
-      onChange={GetSummonerName}
-      id="searchByName"
-      name="searchByName"
-    />
-    <Button variant="primary" onClick={ChangeStatus}>검색</Button>{' '}
-  </InputGroup>
-       
-      </div>                
-  </div>
-  {
-    modalStatus === true 
-    ? <GetRendering/> 
-    : null
-  }
-
-
-
-
-
-
-   
-  
-    </div>
-  );
-}
+        );
+      }
 
 export default App;
 
