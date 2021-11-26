@@ -27,3 +27,6 @@
 # [2021-11-25 기준 개발 현황]
 - 해당소환사가 게임이 아닌경우 해당 소환사가 게임중이 아니라는 문구 표기.
 <img width="1067" alt="스크린샷 2021-11-25 오후 8 50 42" src="https://user-images.githubusercontent.com/69393030/143436765-8e8e31a1-afa0-4423-87e4-f2aa44f3908f.png">
+# [2021-11-26 기준 개발 현황]
+- 해당소환사가 언랭(unranked) 인 경우 , 언랭 이미지를 띄움 
+<img width="1067" alt="스크린샷 2021-11-26 오전 10 03 44" src="https://user-images.githubusercontent.com/69393030/143512148-edde983c-198a-4f3a-b6ea-09f57fc9f801.png">
