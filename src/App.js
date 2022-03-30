@@ -23,7 +23,7 @@ function App() {
   let[count , setCount] = useState(null);
 
   useEffect(() => {
-    setCount(10);
+    setCount(15);
 
   }, []);
   
@@ -221,11 +221,25 @@ function App() {
               })
               //console.log('resdata ! => 2',response2.data);
               for(var i = 0 ; i < Object.keys(response2.data).length;i++){
-                console.log('검색한 소환사의 리그정보! ->',response2.data);
+                //console.log('검색한 소환사의 리그정보! ->',response2.data);
                 setUserRank(response2.data[i]);
               }
              // console.log("setUserRank() set State 3 ");
+            /**
+             * 검색한 소환사의 encryptedId 를 기반으로 챔피언 숙련도 정보를 가져옵니다.
+             */
+             try{
+              //console.log('get Champ Mastery =>' , response2.data[0].summonerId);
+              const getChampMastery = await axios.get('https://kr.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/'+response2.data[0].summonerId+'',{
+                params:{
+                  api_key:api_key,
+                }
+              })
+              console.log('getChampMastery => !' , getChampMastery);
 
+             }catch(error){
+
+             }
             /**
              * @param puuId
              * @description 
@@ -264,24 +278,16 @@ function App() {
                   api_key: api_key,
                 }
               })
-                .then(response => {
-                  // do something with response
+                .then(response => {  
                   users.push(response);
-                  
-               
-               
                 })
 
                 
               )
          
             }
-
           Promise.all(promises).then(()=>{ SetSummonInfo(users)})
           setModalStatus(true);
-
-        
-          
   }
 
 
@@ -1235,16 +1241,11 @@ for(var i = 5; i < 10 ; i++){
 
           try{
             return(
-
-
-              <div className="renderingSummonerInfo">
-        
+              <div className="renderingSummonerInfo">        
                 <h1>
                   <div className="image_box">
-        
-                  <img src={'https://opgg-static.akamaized.net/images/profile_icons/profileIcon'+getUserInfo.profileIconId+'.jpg?image=q_auto:best&v=1518361200'} alt=""/>
-                  {getUserInfo.name}(Lv:{getUserInfo.summonerLevel})   
-                
+                    <img src={'https://opgg-static.akamaized.net/images/profile_icons/profileIcon'+getUserInfo.profileIconId+'.jpg?image=q_auto:best&v=1518361200'} alt=""/>
+                    {getUserInfo.name}(Lv:{getUserInfo.summonerLevel})   
                   </div>
                   </h1>
                   
@@ -1333,29 +1334,16 @@ for(var i = 5; i < 10 ; i++){
                 <div className="fetchingButton" onClick={FetchGameList}>
                 <span>게임 데이터 가져오기 </span>
                 </div>
-                
-            
+
                 <div>
-                
-              
-        
-        
+    
                 </div>
-              
-              
+
               </div>
             )
 
           }
-            
-
-          
-      
-          
         }
-          
-
-      
         return (
           <div className="App">
             <div className="container">
